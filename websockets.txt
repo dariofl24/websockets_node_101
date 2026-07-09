@@ -1,0 +1,1284 @@
+presentation flow:
+
+0) Problem statement: why real-time communication is needed
+1) What are WebSockets
+2) Use cases
+3) Pros and cons
+4) Problems of a raw WebSocket implementation in Node.js
+5) How Socket.IO solves these problems
+6) How to create a client-server app with Socket.IO
+
+
+# Opening: The Problem WebSockets Solve
+
+Modern applications are no longer just static pages that users refresh from time to time. Many applications need to react immediately when something changes.
+
+Users expect real-time experiences:
+
+* A chat message should appear instantly.
+* An order status should update without refreshing the page.
+* A dashboard should show live metrics as they change.
+* A multiplayer game should synchronize player actions immediately.
+* A customer support agent should see when a user is typing.
+* A collaborative document should update as other people edit it.
+
+The problem is that traditional HTTP was not originally designed for this kind of continuous, real-time communication.
+
+HTTP works very well for request-response interactions:
+
+```text
+Client: Give me order 123.
+Server: Here is order 123.
+```
+
+But if the order changes later, the server cannot automatically send the update through that same HTTP request. The client has to ask again.
+
+```text
+Client: Any update?
+Server: No.
+
+Client: Any update?
+Server: No.
+
+Client: Any update?
+Server: Yes, the order has shipped.
+```
+
+This approach is called polling.
+
+Polling works, but it has important limitations:
+
+* It creates unnecessary network traffic.
+* It can overload the server with repeated requests.
+* It introduces delays because updates are only discovered on the next poll.
+* It makes the application feel less real-time.
+* It is inefficient when most checks return “nothing changed.”
+
+For example, imagine an order tracking page that checks the server every five seconds. If the order does not change for ten minutes, the browser still sends 120 requests just to discover that nothing happened.
+
+That is the core problem:
+
+```text
+How can the server send information to the client exactly when something changes, without waiting for the client to repeatedly ask?
+```
+
+This is where WebSockets become useful.
+
+A WebSocket creates a persistent, two-way communication channel between the client and the server.
+
+Instead of repeatedly opening new HTTP requests, the client opens one connection and keeps it alive.
+
+```text
+Client  <====================>  Server
+        persistent connection
+```
+
+Once the connection is open, both sides can send messages at any time.
+
+The client can send data to the server:
+
+```text
+Client: User is typing.
+```
+
+And the server can push data to the client:
+
+```text
+Server: Order 123 changed to shipped.
+```
+
+This makes WebSockets a strong solution for applications that need low-latency, event-driven, real-time communication.
+
+In simple terms:
+
+```text
+HTTP is great when the client asks and the server answers.
+
+WebSockets are great when either side needs to speak at any time.
+```
+
+So the reason WebSockets exist is not because HTTP is bad. HTTP is still excellent for most web operations. The issue is that some modern use cases require continuous communication instead of isolated request-response exchanges.
+
+That is the problem WebSockets solve.
+
+
+Now that we understand the problem — applications need a way for the server and client to communicate immediately and continuously — we can look at the protocol designed for that purpose: WebSocket.
+
+Here is the full answer printed as a presentation outline.
+
+# WebSockets and Socket.IO Presentation
+
+## 1. What are WebSockets?
+
+### Main idea
+
+WebSocket is a **network communication protocol** that allows a client and a server to keep a **persistent, two-way connection** open.
+
+Unlike normal HTTP, where the client sends a request and the server sends a response, WebSockets allow both sides to send data whenever they need to.
+
+A WebSocket connection is useful when the server needs to push information to the client without waiting for the client to ask again.
+
+MDN describes the WebSocket API as a way to open a “two-way interactive communication session” between a browser and a server, allowing messages to be sent without polling the server repeatedly. ([MDN Web Docs][1])
+
+---
+
+## WebSockets vs HTTP
+
+### HTTP
+
+HTTP is usually **request-response based**.
+
+```text
+Client  ---- request ---->  Server
+Client  <--- response ----  Server
+```
+
+Example:
+
+```text
+GET /orders/123
+```
+
+The server responds:
+
+```json
+{
+  "orderId": "123",
+  "status": "shipped"
+}
+```
+
+After the response, that specific interaction is finished.
+
+If the client wants updated information, it needs to ask again.
+
+```text
+Client: Any update?
+Server: Not yet.
+
+Client: Any update?
+Server: Not yet.
+
+Client: Any update?
+Server: Now shipped.
+```
+
+This is called **polling**.
+
+---
+
+### WebSockets
+
+WebSockets keep the connection open.
+
+```text
+Client  <====================>  Server
+        persistent connection
+```
+
+Once the connection is established, either side can send messages.
+
+```text
+Server: Order 123 changed to shipped.
+Client: Received.
+
+Client: User is typing.
+Server: Received.
+```
+
+This is especially useful for real-time applications.
+
+---
+
+## How a WebSocket connection starts
+
+A WebSocket connection starts as an HTTP request and then gets upgraded to the WebSocket protocol.
+
+The client sends an HTTP request with an `Upgrade: websocket` header. After the handshake succeeds, the connection moves from HTTP-style request-response behavior to WebSocket message frames. RFC 6455 defines this opening handshake as an HTTP Upgrade request. ([IETF Datatracker][2])
+
+Simplified example:
+
+```http
+GET /chat HTTP/1.1
+Host: example.com
+Upgrade: websocket
+Connection: Upgrade
+Sec-WebSocket-Key: ...
+Sec-WebSocket-Version: 13
+```
+
+If accepted, the server replies:
+
+```http
+HTTP/1.1 101 Switching Protocols
+Upgrade: websocket
+Connection: Upgrade
+Sec-WebSocket-Accept: ...
+```
+
+After that, the connection stays open.
+
+---
+
+## Important point: WebSocket is language agnostic
+
+WebSocket is a protocol, not a programming language feature.
+
+You can use WebSockets with:
+
+```text
+JavaScript / Node.js
+Java / Spring Boot
+Python
+Go
+C#
+Rust
+PHP
+```
+
+The browser already has a native WebSocket API, and most backend languages have WebSocket libraries.
+
+---
+
+# 2. Use Cases
+
+## Common WebSocket use cases
+
+WebSockets are useful when data needs to move between client and server in near real time.
+
+Examples:
+
+### Chat applications
+
+Messages should appear immediately without refreshing the page.
+
+```text
+User A sends message
+Server pushes message to User B
+```
+
+---
+
+### Live notifications
+
+Examples:
+
+```text
+New order created
+Payment received
+Driver arrived
+New message received
+System alert triggered
+```
+
+---
+
+### Live dashboards
+
+Examples:
+
+```text
+Sales dashboard
+Inventory dashboard
+Monitoring dashboard
+Stock price dashboard
+IoT dashboard
+```
+
+Instead of refreshing every few seconds, the server pushes updates as they happen.
+
+---
+
+### Multiplayer games
+
+Games need fast two-way communication.
+
+Examples:
+
+```text
+Player position
+Game state
+Score changes
+Match events
+```
+
+---
+
+### Collaborative apps
+
+Examples:
+
+```text
+Google Docs-style editing
+Whiteboards
+Shared cursors
+Live comments
+Pair programming
+```
+
+---
+
+### Order tracking
+
+For e-commerce or logistics:
+
+```text
+Order placed
+Order allocated
+Order packed
+Order shipped
+Order delivered
+```
+
+The client can receive updates as soon as the backend changes the order state.
+
+---
+
+### Customer support tools
+
+Examples:
+
+```text
+Agent typing
+Customer online status
+New support message
+Conversation assigned
+```
+
+---
+
+# 3. Pros and Cons of WebSockets
+
+## Pros
+
+### 1. Real-time communication
+
+The server can push data immediately.
+
+No need for the client to constantly ask:
+
+```text
+Any update?
+Any update?
+Any update?
+```
+
+---
+
+### 2. Lower overhead after connection
+
+With HTTP polling, each request includes headers, cookies, authentication data, and connection overhead.
+
+With WebSockets, once the connection is open, messages can be smaller.
+
+---
+
+### 3. Full-duplex communication
+
+Both client and server can send messages independently.
+
+```text
+Client -> Server
+Server -> Client
+```
+
+This is different from classic HTTP request-response communication.
+
+---
+
+### 4. Better user experience
+
+Real-time updates make the application feel faster and more interactive.
+
+Examples:
+
+```text
+Typing indicators
+Instant notifications
+Live status changes
+```
+
+---
+
+### 5. Good fit for event-driven systems
+
+WebSockets work well when your backend is already event-driven.
+
+Example:
+
+```text
+OrderStatusChanged event
+        ↓
+WebSocket server
+        ↓
+Browser receives update
+```
+
+---
+
+## Cons
+
+### 1. More complex than HTTP
+
+HTTP is simple:
+
+```text
+Request -> Response
+```
+
+WebSockets require managing:
+
+```text
+Connections
+Disconnections
+Reconnections
+Heartbeats
+Authentication
+Authorization
+Message formats
+Scaling
+```
+
+---
+
+### 2. Persistent connections consume resources
+
+Each connected client keeps a connection open.
+
+That means the server needs to manage memory, sockets, and connection state.
+
+Socket.IO’s own docs mention that keeping an open TCP connection can cause higher battery usage for users, especially for mobile use cases. ([Socket.IO][3])
+
+---
+
+### 3. Scaling is harder
+
+With normal HTTP, any request can usually go to any server.
+
+With WebSockets, the client has a long-lived connection to a specific server.
+
+This introduces problems with:
+
+```text
+Load balancers
+Sticky sessions
+Horizontal scaling
+Message broadcasting across nodes
+```
+
+---
+
+### 4. Not ideal for simple request-response operations
+
+For simple CRUD operations, HTTP is usually better.
+
+Examples:
+
+```text
+Create product
+Update profile
+Get order details
+Delete image
+```
+
+Use WebSockets only when real-time communication adds value.
+
+---
+
+### 5. Proxies and firewalls can interfere
+
+Some corporate proxies, firewalls, or network configurations can block or interrupt WebSocket connections.
+
+Socket.IO explicitly mentions that WebSocket connections may fail due to corporate proxies, personal firewalls, or antivirus software. ([Socket.IO][4])
+
+---
+
+# 4. Problems of a Raw WebSocket Implementation in Node.js
+
+A raw WebSocket implementation gives you a lot of control, but you need to solve many problems yourself.
+
+For example, using a basic Node.js WebSocket library:
+
+```js
+import { WebSocketServer } from "ws";
+
+const wss = new WebSocketServer({ port: 3000 });
+
+wss.on("connection", (ws) => {
+  console.log("Client connected");
+
+  ws.on("message", (message) => {
+    console.log("Received:", message.toString());
+
+    ws.send("Message received");
+  });
+
+  ws.on("close", () => {
+    console.log("Client disconnected");
+  });
+});
+```
+
+This works, but it is very basic.
+
+---
+
+## Problem 1: No automatic reconnection
+
+If the connection is lost, the browser does not automatically reconnect.
+
+You need to write client-side logic like:
+
+```js
+let socket;
+
+function connect() {
+  socket = new WebSocket("ws://localhost:3000");
+
+  socket.onopen = () => {
+    console.log("Connected");
+  };
+
+  socket.onclose = () => {
+    console.log("Disconnected. Reconnecting...");
+    setTimeout(connect, 1000);
+  };
+}
+
+connect();
+```
+
+But this simple version has problems:
+
+```text
+No exponential backoff
+No max retry strategy
+No offline handling
+No duplicate connection prevention
+No state recovery
+```
+
+---
+
+## Problem 2: No built-in event system
+
+Raw WebSockets send messages.
+
+They do not know about application-level events like:
+
+```text
+chat:message
+order:updated
+user:typing
+notification:new
+```
+
+You need to invent your own message structure.
+
+Example:
+
+```js
+socket.send(JSON.stringify({
+  type: "chat:message",
+  payload: {
+    text: "Hello"
+  }
+}));
+```
+
+Then on the server:
+
+```js
+ws.on("message", (rawMessage) => {
+  const message = JSON.parse(rawMessage);
+
+  if (message.type === "chat:message") {
+    // handle chat message
+  }
+
+  if (message.type === "user:typing") {
+    // handle typing event
+  }
+});
+```
+
+This quickly becomes repetitive.
+
+---
+
+## Problem 3: No built-in acknowledgements
+
+Sometimes you need to know if the other side received and processed a message.
+
+Example:
+
+```text
+Client sends message
+Server saves it to database
+Server confirms success
+```
+
+With raw WebSockets, you need to create your own correlation IDs.
+
+```js
+socket.send(JSON.stringify({
+  id: "abc-123",
+  type: "chat:message",
+  payload: {
+    text: "Hello"
+  }
+}));
+```
+
+Then the server needs to reply:
+
+```js
+ws.send(JSON.stringify({
+  replyTo: "abc-123",
+  status: "ok"
+}));
+```
+
+You must manage all of that yourself.
+
+---
+
+## Problem 4: No rooms or groups
+
+In real apps, you usually do not want to send every message to every client.
+
+You want things like:
+
+```text
+Send to users in order 123
+Send to users in chat room ABC
+Send to admins only
+Send to one specific user
+```
+
+With raw WebSockets, you need to manage this manually.
+
+Example:
+
+```js
+const rooms = new Map();
+
+function joinRoom(roomId, ws) {
+  if (!rooms.has(roomId)) {
+    rooms.set(roomId, new Set());
+  }
+
+  rooms.get(roomId).add(ws);
+}
+
+function sendToRoom(roomId, message) {
+  const clients = rooms.get(roomId) || [];
+
+  for (const client of clients) {
+    client.send(JSON.stringify(message));
+  }
+}
+```
+
+You also need to remove clients from rooms when they disconnect.
+
+---
+
+## Problem 5: No fallback transport
+
+Raw WebSocket means WebSocket only.
+
+If WebSocket is blocked by a proxy or network rule, your real-time feature may stop working.
+
+There is no automatic fallback to HTTP long-polling.
+
+---
+
+## Problem 6: Connection health detection
+
+A connection can be broken without either side immediately noticing.
+
+For example:
+
+```text
+User loses Wi-Fi
+Laptop sleeps
+Mobile network changes
+Proxy silently drops connection
+```
+
+You need heartbeat logic:
+
+```text
+Server sends ping
+Client sends pong
+If no pong, close connection
+```
+
+MDN notes that the stable `WebSocket` interface does not support backpressure, meaning messages arriving faster than the app can process them may cause buffering, high memory use, or CPU issues. ([MDN Web Docs][1])
+
+---
+
+## Problem 7: Scaling across multiple servers
+
+Imagine you have three WebSocket servers:
+
+```text
+Server A
+Server B
+Server C
+```
+
+User 1 is connected to Server A.
+
+User 2 is connected to Server B.
+
+If User 1 sends a message to User 2, Server A needs a way to communicate with Server B.
+
+That usually requires a shared pub/sub system such as:
+
+```text
+Redis
+Kafka
+NATS
+RabbitMQ
+```
+
+Raw WebSockets do not solve this automatically.
+
+---
+
+# 5. How Socket.IO Solves These Problems
+
+## What is Socket.IO?
+
+Socket.IO is a library for real-time, bidirectional, event-based communication between client and server.
+
+It usually uses WebSocket, but it is not the same as raw WebSocket.
+
+Socket.IO adds its own protocol and features on top.
+
+Its documentation describes features over plain WebSockets, including HTTP long-polling fallback, automatic reconnection, packet buffering, acknowledgements, broadcasting, multiplexing, and rooms. ([Socket.IO][3])
+
+---
+
+## Socket.IO solution 1: Event-based communication
+
+Instead of manually creating message types, you emit and listen to events.
+
+```js
+socket.emit("chat:message", {
+  text: "Hello"
+});
+```
+
+```js
+socket.on("chat:message", (message) => {
+  console.log(message.text);
+});
+```
+
+This is easier to read and maintain.
+
+---
+
+## Socket.IO solution 2: Automatic reconnection
+
+If the connection is lost, Socket.IO automatically tries to reconnect.
+
+Socket.IO uses heartbeat checks and automatic reconnection with exponential backoff to avoid overwhelming the server. ([Socket.IO][3])
+
+With raw WebSockets, you implement this yourself.
+
+With Socket.IO, it is built in.
+
+---
+
+## Socket.IO solution 3: HTTP long-polling fallback
+
+Socket.IO can fall back to HTTP long-polling if WebSocket cannot be established.
+
+This helps in environments where WebSocket is blocked or unreliable. ([Socket.IO][3])
+
+Socket.IO’s Engine.IO layer starts with HTTP long-polling by default and can upgrade to WebSocket when possible. ([Socket.IO][4])
+
+---
+
+## Socket.IO solution 4: Acknowledgements
+
+Socket.IO supports acknowledgements using callbacks.
+
+Client:
+
+```js
+socket.emit("chat:message", "Hello", (response) => {
+  console.log(response);
+});
+```
+
+Server:
+
+```js
+socket.on("chat:message", (message, callback) => {
+  console.log(message);
+
+  callback({
+    status: "ok"
+  });
+});
+```
+
+Socket.IO documents acknowledgements as a built-in feature for sending an event and receiving a response. ([Socket.IO][3])
+
+---
+
+## Socket.IO solution 5: Rooms
+
+Rooms allow you to group sockets.
+
+Example:
+
+```js
+socket.join("order:123");
+```
+
+Then send only to that room:
+
+```js
+io.to("order:123").emit("order:updated", {
+  orderId: "123",
+  status: "shipped"
+});
+```
+
+This is very useful for:
+
+```text
+Chat rooms
+Order tracking
+Admin dashboards
+Private user notifications
+Game matches
+```
+
+---
+
+## Socket.IO solution 6: Broadcasting
+
+Socket.IO makes it easy to send messages to:
+
+```text
+One client
+All clients
+All clients except sender
+A room
+A namespace
+```
+
+Example:
+
+```js
+socket.broadcast.emit("user:joined", {
+  username: "Dario"
+});
+```
+
+This sends the message to everyone except the sender.
+
+---
+
+## Socket.IO solution 7: Packet buffering
+
+If the client is temporarily disconnected, Socket.IO can buffer packets and send them when the client reconnects. ([Socket.IO][3])
+
+This is helpful when the network connection briefly drops.
+
+---
+
+## Raw WebSocket vs Socket.IO Summary
+
+| Topic                | Raw WebSocket               | Socket.IO                          |
+| -------------------- | --------------------------- | ---------------------------------- |
+| Protocol             | Standard WebSocket protocol | Custom protocol built on Engine.IO |
+| Communication style  | Raw messages                | Named events                       |
+| Reconnection         | Manual                      | Built in                           |
+| Heartbeats           | Manual                      | Built in                           |
+| Acknowledgements     | Manual                      | Built in                           |
+| Rooms                | Manual                      | Built in                           |
+| Broadcasting         | Manual                      | Built in                           |
+| Fallback             | No                          | HTTP long-polling fallback         |
+| Client compatibility | Any WebSocket client        | Requires Socket.IO client          |
+| Control              | Maximum control             | More abstraction                   |
+| Complexity           | More custom code            | Easier application code            |
+
+---
+
+# 6. How to Create a Client-Server App with Socket.IO
+
+We will create a simple chat-style app.
+
+## Step 1: Create the project
+
+```bash
+mkdir socketio-demo
+cd socketio-demo
+npm init -y
+```
+
+Install dependencies:
+
+```bash
+npm install express socket.io
+```
+
+Install development dependency:
+
+```bash
+npm install --save-dev nodemon
+```
+
+---
+
+## Step 2: Configure `package.json`
+
+```json
+{
+  "name": "socketio-demo",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^5.0.0",
+    "socket.io": "^4.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0"
+  }
+}
+```
+
+Socket.IO’s official tutorial supports both CommonJS and ES modules, and its examples include importing `Server` from `socket.io`. ([Socket.IO][5])
+
+---
+
+## Step 3: Create the server
+
+Create a file called:
+
+```text
+server.js
+```
+
+Add this code:
+
+```js
+import express from "express";
+import { createServer } from "http";
+import { Server } from "socket.io";
+
+const app = express();
+const httpServer = createServer(app);
+
+const io = new Server(httpServer);
+
+app.use(express.static("public"));
+
+io.on("connection", (socket) => {
+  console.log("A user connected:", socket.id);
+
+  socket.on("chat:message", (message) => {
+    console.log("Message received:", message);
+
+    io.emit("chat:message", {
+      id: socket.id,
+      text: message.text,
+      sentAt: new Date().toISOString()
+    });
+  });
+
+  socket.on("disconnect", () => {
+    console.log("A user disconnected:", socket.id);
+  });
+});
+
+httpServer.listen(3000, () => {
+  console.log("Server running on http://localhost:3000");
+});
+```
+
+---
+
+## Step 4: Create the client
+
+Create a folder:
+
+```bash
+mkdir public
+```
+
+Create a file:
+
+```text
+public/index.html
+```
+
+Add this code:
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Socket.IO Demo</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 600px;
+        margin: 40px auto;
+      }
+
+      #messages {
+        border: 1px solid #ccc;
+        min-height: 200px;
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+
+      .message {
+        margin-bottom: 8px;
+      }
+
+      form {
+        display: flex;
+        gap: 8px;
+      }
+
+      input {
+        flex: 1;
+        padding: 8px;
+      }
+
+      button {
+        padding: 8px 16px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Socket.IO Chat Demo</h1>
+
+    <div id="messages"></div>
+
+    <form id="form">
+      <input id="input" autocomplete="off" placeholder="Type a message..." />
+      <button>Send</button>
+    </form>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+
+      const form = document.getElementById("form");
+      const input = document.getElementById("input");
+      const messages = document.getElementById("messages");
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        if (!input.value.trim()) {
+          return;
+        }
+
+        socket.emit("chat:message", {
+          text: input.value
+        });
+
+        input.value = "";
+      });
+
+      socket.on("chat:message", (message) => {
+        const item = document.createElement("div");
+        item.className = "message";
+        item.textContent = `${message.id}: ${message.text}`;
+        messages.appendChild(item);
+      });
+    </script>
+  </body>
+</html>
+```
+
+---
+
+## Step 5: Run the app
+
+```bash
+npm run dev
+```
+
+Open:
+
+```text
+http://localhost:3000
+```
+
+Open the same URL in two browser windows.
+
+Send a message from one window.
+
+You should see the message appear in both windows.
+
+---
+
+# Improved Example: Add Rooms
+
+Now imagine users want to subscribe to a specific order.
+
+## Server
+
+```js
+io.on("connection", (socket) => {
+  socket.on("order:join", (orderId) => {
+    socket.join(`order:${orderId}`);
+
+    socket.emit("order:joined", {
+      orderId
+    });
+  });
+
+  socket.on("order:update", (event) => {
+    io.to(`order:${event.orderId}`).emit("order:updated", {
+      orderId: event.orderId,
+      status: event.status,
+      updatedAt: new Date().toISOString()
+    });
+  });
+});
+```
+
+## Client
+
+```js
+socket.emit("order:join", "123");
+
+socket.on("order:updated", (event) => {
+  console.log("Order updated:", event);
+});
+```
+
+This is much cleaner than manually managing lists of clients.
+
+---
+
+# Improved Example: Add Acknowledgement
+
+## Client
+
+```js
+socket.emit(
+  "chat:message",
+  {
+    text: "Hello"
+  },
+  (response) => {
+    console.log("Server response:", response);
+  }
+);
+```
+
+## Server
+
+```js
+socket.on("chat:message", async (message, callback) => {
+  console.log("Saving message:", message);
+
+  callback({
+    status: "saved"
+  });
+});
+```
+
+This is useful when the client needs confirmation.
+
+---
+
+# When to Use Raw WebSockets
+
+Use raw WebSockets when:
+
+```text
+You need maximum protocol compatibility
+You want to connect non-Socket.IO clients
+You need a very lightweight implementation
+You want full control over the protocol
+You are building infrastructure-level systems
+```
+
+Example:
+
+```text
+IoT protocol bridge
+Custom trading protocol
+Game networking engine
+Backend-to-backend streaming system
+```
+
+---
+
+# When to Use Socket.IO
+
+Use Socket.IO when:
+
+```text
+You are building a web app
+You want faster development
+You need reconnection
+You need rooms
+You need broadcasting
+You need acknowledgements
+You want fallback support
+```
+
+Example:
+
+```text
+Chat
+Notifications
+Dashboards
+Order tracking
+Collaborative apps
+Customer support
+```
+
+---
+
+# Final Takeaway
+
+WebSocket is the **low-level protocol**.
+
+Socket.IO is a **higher-level real-time communication library**.
+
+WebSockets give you the communication channel.
+
+Socket.IO gives you the application features that most real-time apps need.
+
+```text
+WebSocket = persistent two-way connection
+
+Socket.IO = WebSocket-style communication + reconnection + events + rooms + acknowledgements + fallback
+```
+
+For most product applications, Socket.IO is easier and faster to use.
+
+For maximum interoperability and protocol control, raw WebSockets may be better.
+
+[1]: https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API "WebSocket API (WebSockets) - Web APIs | MDN"
+[2]: https://datatracker.ietf.org/doc/html/rfc6455 "
+            
+                RFC 6455 - The WebSocket Protocol
+            
+        "
+[3]: https://socket.io/docs/v4/ "Introduction | Socket.IO"
+[4]: https://socket.io/docs/v4/how-it-works/ "How it works | Socket.IO"
+[5]: https://socket.io/docs/v4/tutorial/introduction "Tutorial - Introduction | Socket.IO"
