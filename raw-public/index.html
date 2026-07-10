@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Raw WebSocket Demo</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+
+  <body>
+    <h1>Raw WebSocket Demo</h1>
+    <p class="meta" id="status">Connecting...</p>
+
+    <section>
+      <h2>Room</h2>
+      <form id="room-form">
+        <input id="room-id" autocomplete="off" value="global" placeholder="Room ID" />
+        <button>Join Room</button>
+      </form>
+    </section>
+
+    <section>
+      <h2>Messages</h2>
+      <div id="messages"></div>
+
+      <form id="chat-form">
+        <input id="chat-input" autocomplete="off" placeholder="Type a message..." />
+        <button>Send</button>
+      </form>
+    </section>
+
+    <section>
+      <h2>Events</h2>
+      <div id="events"></div>
+    </section>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
