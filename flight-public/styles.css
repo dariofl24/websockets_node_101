@@ -1,0 +1,370 @@
+:root {
+  --bg: #0d1218;
+  --panel: #121924;
+  --panel-raised: #18212e;
+  --line: #232e3c;
+  --text: #d7dee6;
+  --text-muted: #7d8a97;
+  --amber: #f5b942;
+  --amber-bright: #ffd97a;
+  --green: #46d68c;
+  --red: #e0564f;
+  --display: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  display: grid;
+  grid-template-rows: 52px 1fr;
+  grid-template-columns: 280px 1fr;
+  grid-template-areas:
+    "topbar topbar"
+    "sidebar map";
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 13px;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+
+/* Top bar */
+
+.topbar {
+  grid-area: topbar;
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 0 18px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+  line-height: 52px;
+}
+
+.topbar__title {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.topbar__subtitle {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.topbar__status {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.viewers {
+  color: var(--text-muted);
+}
+
+.viewers #clients-count {
+  color: var(--text);
+}
+
+.status-pill {
+  padding: 3px 10px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: normal;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.status-pill--live {
+  color: #06281a;
+  background: var(--green);
+}
+
+.status-pill--offline {
+  color: #2b0d0b;
+  background: var(--red);
+}
+
+/* Sidebar */
+
+.sidebar {
+  grid-area: sidebar;
+  display: grid;
+  grid-template-rows: auto 1fr auto minmax(120px, 30%);
+  min-height: 0;
+  border-right: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.sidebar__heading {
+  margin: 0;
+  padding: 12px 16px 8px;
+  font-family: var(--display);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.flight-list {
+  overflow-y: auto;
+  min-height: 0;
+  padding: 0 8px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.flight-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  padding: 7px 10px;
+  border: 0;
+  border-radius: 3px;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.flight-row:hover {
+  background: var(--panel-raised);
+}
+
+.flight-row--selected {
+  background: var(--panel-raised);
+  box-shadow: inset 2px 0 0 var(--amber);
+}
+
+.flight-row__callsign {
+  font-family: var(--display);
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+}
+
+.flight-row__route {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.event-feed {
+  margin: 0;
+  padding: 0 16px 12px;
+  overflow-y: auto;
+  min-height: 0;
+  list-style: none;
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.event-feed li {
+  padding: 3px 0;
+}
+
+.event-feed li:first-child {
+  color: var(--text);
+}
+
+/* Map */
+
+.map-wrap {
+  grid-area: map;
+  position: relative;
+  min-height: 0;
+}
+
+#map {
+  position: absolute;
+  inset: 0;
+  background: #cfdde6;
+}
+
+.plane-marker {
+  background: none;
+  border: 0;
+}
+
+.plane-icon {
+  width: 30px;
+  height: 30px;
+  transition: transform 0.9s linear;
+}
+
+.plane-icon svg {
+  width: 100%;
+  height: 100%;
+  fill: var(--amber);
+  filter: drop-shadow(0 1px 1.5px rgba(20, 26, 34, 0.55));
+}
+
+.plane-icon--selected svg {
+  fill: #e8560f;
+  filter: drop-shadow(0 1px 2.5px rgba(20, 26, 34, 0.6));
+}
+
+.airport-tooltip,
+.plane-tooltip {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text);
+  background: var(--panel-raised);
+  border: 1px solid var(--line);
+  box-shadow: none;
+}
+
+.leaflet-tooltip-top:before {
+  border-top-color: var(--line);
+}
+
+/* Telemetry panel — styled after a cockpit primary flight display strip */
+
+.telemetry {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  z-index: 1000;
+  width: 320px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: rgba(13, 18, 24, 0.94);
+}
+
+.telemetry__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.telemetry__callsign {
+  display: block;
+  font-family: var(--display);
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--amber-bright);
+}
+
+.telemetry__route {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.telemetry__close {
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 18px;
+  line-height: 1;
+  padding: 2px 6px;
+  cursor: pointer;
+}
+
+.telemetry__close:hover {
+  color: var(--text);
+}
+
+.telemetry__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin: 14px 0;
+}
+
+.telemetry__grid dt {
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.telemetry__grid dd {
+  margin: 3px 0 0;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.telemetry__progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.telemetry__airport {
+  font-family: var(--display);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+.telemetry__track {
+  flex: 1;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--line);
+  overflow: hidden;
+}
+
+.telemetry__track-fill {
+  height: 100%;
+  width: 0;
+  background: var(--amber);
+  transition: width 0.9s linear;
+}
+
+@media (max-width: 760px) {
+  body {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "topbar"
+      "map";
+  }
+
+  .sidebar {
+    display: none;
+  }
+
+  .telemetry {
+    left: 16px;
+    width: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plane-icon,
+  .telemetry__track-fill {
+    transition: none;
+  }
+}

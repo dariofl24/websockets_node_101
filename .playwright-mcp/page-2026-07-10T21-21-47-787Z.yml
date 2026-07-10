@@ -1,0 +1,73 @@
+- generic [active] [ref=f3e1]:
+  - banner [ref=f3e2]:
+    - heading "Flight Tracker" [level=1] [ref=f3e3]
+    - paragraph [ref=f3e4]: Socket.IO · rooms · acknowledgements
+    - generic [ref=f3e5]:
+      - generic [ref=f3e6]: 2 connected
+      - generic [ref=f3e7]: Live
+  - complementary [ref=f3e8]:
+    - heading "Flights" [level=2] [ref=f3e9]
+    - navigation "Active flights" [ref=f3e10]:
+      - button "AA638 FRA → JFK" [ref=f3e11] [cursor=pointer]:
+        - generic [ref=f3e12]: AA638
+        - generic [ref=f3e13]: FRA → JFK
+      - button "AF802 FRA → JNB" [ref=f3e14] [cursor=pointer]:
+        - generic [ref=f3e15]: AF802
+        - generic [ref=f3e16]: FRA → JNB
+      - button "AM965 BOM → AMS" [ref=f3e17] [cursor=pointer]:
+        - generic [ref=f3e18]: AM965
+        - generic [ref=f3e19]: BOM → AMS
+      - button "DL661 DXB → MEX" [ref=f3e20] [cursor=pointer]:
+        - generic [ref=f3e21]: DL661
+        - generic [ref=f3e22]: DXB → MEX
+      - button "EK739 MAD → FCO" [ref=f3e23] [cursor=pointer]:
+        - generic [ref=f3e24]: EK739
+        - generic [ref=f3e25]: MAD → FCO
+      - button "EK952 HND → ORD" [ref=f3e26] [cursor=pointer]:
+        - generic [ref=f3e27]: EK952
+        - generic [ref=f3e28]: HND → ORD
+      - button "EK961 JFK → DXB" [ref=f3e29] [cursor=pointer]:
+        - generic [ref=f3e30]: EK961
+        - generic [ref=f3e31]: JFK → DXB
+      - button "JL216 ORD → FRA" [ref=f3e32] [cursor=pointer]:
+        - generic [ref=f3e33]: JL216
+        - generic [ref=f3e34]: ORD → FRA
+      - button "JL636 ORD → AMS" [ref=f3e35] [cursor=pointer]:
+        - generic [ref=f3e36]: JL636
+        - generic [ref=f3e37]: ORD → AMS
+      - button "JL995 LHR → MIA" [ref=f3e38] [cursor=pointer]:
+        - generic [ref=f3e39]: JL995
+        - generic [ref=f3e40]: LHR → MIA
+      - button "LH541 LAX → MAD" [ref=f3e41] [cursor=pointer]:
+        - generic [ref=f3e42]: LH541
+        - generic [ref=f3e43]: LAX → MAD
+      - button "LH716 LHR → DOH" [ref=f3e44] [cursor=pointer]:
+        - generic [ref=f3e45]: LH716
+        - generic [ref=f3e46]: LHR → DOH
+      - button "QR871 FRA → MEX" [ref=f3e47] [cursor=pointer]:
+        - generic [ref=f3e48]: QR871
+        - generic [ref=f3e49]: FRA → MEX
+      - button "SQ283 GRU → FRA" [ref=f3e50] [cursor=pointer]:
+        - generic [ref=f3e51]: SQ283
+        - generic [ref=f3e52]: GRU → FRA
+      - button "UA693 FCO → YYZ" [ref=f3e53] [cursor=pointer]:
+        - generic [ref=f3e54]: UA693
+        - generic [ref=f3e55]: FCO → YYZ
+    - heading "Events" [level=2] [ref=f3e56]
+    - list [ref=f3e57]:
+      - listitem [ref=f3e58]: Connected to server
+  - main [ref=f3e59]:
+    - generic [ref=f3e60]:
+      - generic:
+        - generic [ref=f3e136]:
+          - button "Zoom in" [ref=f3e137] [cursor=pointer]: +
+          - button "Zoom out" [ref=f3e138] [cursor=pointer]: −
+        - generic [ref=f3e139]:
+          - link "Leaflet" [ref=f3e140] [cursor=pointer]:
+            - /url: https://leafletjs.com
+          - text: "| ©"
+          - link "OpenStreetMap" [ref=f3e145] [cursor=pointer]:
+            - /url: https://www.openstreetmap.org/copyright
+          - text: contributors ©
+          - link "CARTO" [ref=f3e146] [cursor=pointer]:
+            - /url: https://carto.com/attributions

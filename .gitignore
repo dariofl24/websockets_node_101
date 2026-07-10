@@ -19,6 +19,8 @@ dist/
 build/
 coverage/
 .cache/
+flight-public/app.js
+flight-public/app.js.map
 
 # OS and editor files
 .DS_Store

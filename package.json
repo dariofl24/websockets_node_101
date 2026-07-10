@@ -10,17 +10,25 @@
     "dev:socketio": "tsx watch server.ts",
     "start:raw": "tsx raw-websocket-server.ts",
     "dev:raw": "tsx watch raw-websocket-server.ts",
-    "typecheck": "tsc --noEmit"
+    "build:flights": "esbuild flight-client/main.ts --bundle --sourcemap --outfile=flight-public/app.js",
+    "watch:flights": "npm run build:flights -- --watch",
+    "start:flights": "npm run build:flights && tsx flight-server.ts",
+    "dev:flights": "npm run build:flights && tsx watch flight-server.ts",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p flight-client"
   },
   "dependencies": {
     "express": "^5.1.0",
+    "leaflet": "^1.9.4",
     "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.3",
     "ws": "^8.18.3"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
+    "@types/leaflet": "^1.9.21",
     "@types/node": "^26.1.1",
     "@types/ws": "^8.18.1",
+    "esbuild": "^0.28.1",
     "tsx": "^4.23.0",
     "typescript": "^7.0.2"
   }

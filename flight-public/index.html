@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Flight Tracker · Socket.IO demo</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23f5b942' d='M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <h1 class="topbar__title">Flight Tracker</h1>
+      <p class="topbar__subtitle">Socket.IO · rooms · acknowledgements</p>
+      <div class="topbar__status">
+        <span class="viewers"><span id="clients-count">0</span> connected</span>
+        <span id="status-pill" class="status-pill status-pill--offline">Offline</span>
+      </div>
+    </header>
+
+    <aside class="sidebar">
+      <h2 class="sidebar__heading">Flights</h2>
+      <nav id="flight-list" class="flight-list" aria-label="Active flights"></nav>
+      <h2 class="sidebar__heading">Events</h2>
+      <ul id="event-feed" class="event-feed" aria-live="polite"></ul>
+    </aside>
+
+    <main class="map-wrap">
+      <div id="map"></div>
+
+      <section id="telemetry" class="telemetry" hidden>
+        <header class="telemetry__header">
+          <div>
+            <span id="tel-callsign" class="telemetry__callsign"></span>
+            <span id="tel-route" class="telemetry__route"></span>
+          </div>
+          <button id="telemetry-close" class="telemetry__close" type="button" aria-label="Leave flight room">×</button>
+        </header>
+        <dl class="telemetry__grid">
+          <div><dt>Alt ft</dt><dd id="tel-altitude">—</dd></div>
+          <div><dt>Speed kt</dt><dd id="tel-speed">—</dd></div>
+          <div><dt>Heading</dt><dd id="tel-heading">—</dd></div>
+          <div><dt>Arrives in</dt><dd id="tel-eta">—</dd></div>
+        </dl>
+        <div class="telemetry__progress">
+          <span id="tel-origin" class="telemetry__airport"></span>
+          <div class="telemetry__track"><div id="tel-progress-bar" class="telemetry__track-fill"></div></div>
+          <span id="tel-destination" class="telemetry__airport"></span>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>

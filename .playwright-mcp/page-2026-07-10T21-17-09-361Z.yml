@@ -1,0 +1,98 @@
+- generic [ref=e1]:
+  - banner [ref=e2]:
+    - heading "Flight Tracker" [level=1] [ref=e3]
+    - paragraph [ref=e4]: Socket.IO · rooms · acknowledgements
+    - generic [ref=e5]:
+      - generic [ref=e6]: 2 connected
+      - generic [ref=e7]: Live
+  - complementary [ref=e8]:
+    - heading "Flights" [level=2] [ref=e9]
+    - navigation "Active flights" [ref=e10]:
+      - button "AM965 BOM → AMS" [active] [ref=e11] [cursor=pointer]:
+        - generic [ref=e12]: AM965
+        - generic [ref=e13]: BOM → AMS
+      - button "BA803 AMS → LAX" [ref=e14] [cursor=pointer]:
+        - generic [ref=e15]: BA803
+        - generic [ref=e16]: AMS → LAX
+      - button "DL517 SYD → AMS" [ref=e17] [cursor=pointer]:
+        - generic [ref=e18]: DL517
+        - generic [ref=e19]: SYD → AMS
+      - button "DL661 DXB → MEX" [ref=e20] [cursor=pointer]:
+        - generic [ref=e21]: DL661
+        - generic [ref=e22]: DXB → MEX
+      - button "EK952 HND → ORD" [ref=e23] [cursor=pointer]:
+        - generic [ref=e24]: EK952
+        - generic [ref=e25]: HND → ORD
+      - button "JL216 ORD → FRA" [ref=e26] [cursor=pointer]:
+        - generic [ref=e27]: JL216
+        - generic [ref=e28]: ORD → FRA
+      - button "JL291 FCO → DOH" [ref=e29] [cursor=pointer]:
+        - generic [ref=e30]: JL291
+        - generic [ref=e31]: FCO → DOH
+      - button "JL952 FCO → YYZ" [ref=e32] [cursor=pointer]:
+        - generic [ref=e33]: JL952
+        - generic [ref=e34]: FCO → YYZ
+      - button "KL138 GRU → MAD" [ref=e35] [cursor=pointer]:
+        - generic [ref=e36]: KL138
+        - generic [ref=e37]: GRU → MAD
+      - button "LA122 BOM → DXB" [ref=e38] [cursor=pointer]:
+        - generic [ref=e39]: LA122
+        - generic [ref=e40]: BOM → DXB
+      - button "QF968 BOM → DOH" [ref=e41] [cursor=pointer]:
+        - generic [ref=e42]: QF968
+        - generic [ref=e43]: BOM → DOH
+      - button "QR871 FRA → MEX" [ref=e44] [cursor=pointer]:
+        - generic [ref=e45]: QR871
+        - generic [ref=e46]: FRA → MEX
+      - button "SQ501 YYZ → GRU" [ref=e47] [cursor=pointer]:
+        - generic [ref=e48]: SQ501
+        - generic [ref=e49]: YYZ → GRU
+      - button "UA687 FRA → DOH" [ref=e50] [cursor=pointer]:
+        - generic [ref=e51]: UA687
+        - generic [ref=e52]: FRA → DOH
+      - button "LA245 DOH → BOM" [ref=e147] [cursor=pointer]:
+        - generic [ref=e148]: LA245
+        - generic [ref=e149]: DOH → BOM
+    - heading "Events" [level=2] [ref=e56]
+    - list [ref=e57]:
+      - listitem [ref=e150]: "Ack: joined room flight:FL-8"
+      - listitem [ref=e151]: LA245 departed DOH → BOM
+      - listitem [ref=e152]: UA825 landed at CDG
+      - listitem [ref=e58]: Connected to server
+  - main [ref=e59]:
+    - generic [ref=e60]:
+      - generic:
+        - generic [ref=e136]:
+          - button "Zoom in" [ref=e137] [cursor=pointer]: +
+          - button "Zoom out" [ref=e138] [cursor=pointer]: −
+        - generic [ref=e139]:
+          - link "Leaflet" [ref=e140] [cursor=pointer]:
+            - /url: https://leafletjs.com
+          - text: "| ©"
+          - link "OpenStreetMap" [ref=e145] [cursor=pointer]:
+            - /url: https://www.openstreetmap.org/copyright
+          - text: contributors ©
+          - link "CARTO" [ref=e146] [cursor=pointer]:
+            - /url: https://carto.com/attributions
+    - generic [ref=e158]:
+      - generic [ref=e159]:
+        - generic [ref=e160]:
+          - generic [ref=e161]: AM965
+          - generic [ref=e162]: Mumbai → Amsterdam Schiphol
+        - button "Leave flight room" [ref=e163] [cursor=pointer]: ×
+      - generic [ref=e164]:
+        - generic [ref=e165]:
+          - term [ref=e166]: Altitude ft
+          - definition [ref=e167]: 36,000
+        - generic [ref=e168]:
+          - term [ref=e169]: Speed kt
+          - definition [ref=e170]: "484"
+        - generic [ref=e171]:
+          - term [ref=e172]: Heading
+          - definition [ref=e173]: 313°
+        - generic [ref=e174]:
+          - term [ref=e175]: Arrives in
+          - definition [ref=e176]: 5.1m
+      - generic [ref=e177]:
+        - generic [ref=e178]: BOM
+        - generic [ref=e181]: AMS
